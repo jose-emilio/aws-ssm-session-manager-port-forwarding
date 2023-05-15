@@ -84,7 +84,7 @@ Resources:
             yum update -y
             yum install httpd -y
             systemctl enable httpd
-            systemctl start http
+            systemctl start httpd
             echo "<h1>Servidor web en la instancia 2</h1>" >> /var/www/html/index.html
       Tags:
         - Key: "Name"
