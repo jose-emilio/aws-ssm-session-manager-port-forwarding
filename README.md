@@ -3,7 +3,7 @@ En este repositorio se prueba el funcionamiento de un tunel SSH con Port Forward
 
 La arquitectura propuesta quedaría como sigue:
 
-![Arquitectura](images/portforwarding.png)
+![Arquitectura](images/port-forwarding.png)
 
 ## **Requerimientos**
 
