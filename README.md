@@ -1,5 +1,5 @@
 # **Port Forwarding con AWS Systems Manager Session Manager**
-En este repositorio se prueba el funcionamiento de un tunel SSH con Port Forwarding mediante AWS SSM Session Manager. Para ello, se crearán dos instancias EC2 en subredes privadas, tras un NAT Gateway. Una de las instancias (instancia A), se utilizará para realizar un túnel SSH para conectar a un servicio HTTP alojado en la segunda instancia (instancia B).
+En este repositorio se prueba el funcionamiento de un túnel SSH con Port Forwarding mediante AWS SSM Session Manager. Para ello, se crearán dos instancias EC2 en subredes privadas, tras un NAT Gateway. Una de las instancias (instancia A), se utilizará para realizar un túnel SSH para conectar a un servicio HTTP alojado en la segunda instancia (instancia B).
 
 La arquitectura propuesta quedaría como sigue:
 
