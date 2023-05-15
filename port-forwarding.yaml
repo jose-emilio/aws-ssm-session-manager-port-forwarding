@@ -12,6 +12,7 @@ Resources:
       Parameters:
         Nombre: Servicio
         VPC: 10.0.0.0/16
+        AZ: 1
         SubredesPublicas: SI
         SubredesPrivadas: SI
         NATGateways: SI
@@ -76,7 +77,7 @@ Resources:
       InstanceType: t4g.micro
       SecurityGroupIds:
         - !Ref grupoSegInstancia2
-      SubnetId: !GetAtt VPC.Outputs.Privada2
+      SubnetId: !GetAtt VPC.Outputs.Privada1
       UserData:
         Fn::Base64:
           !Sub |

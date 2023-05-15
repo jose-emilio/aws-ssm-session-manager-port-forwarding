@@ -9,6 +9,7 @@ Metadata:
         Parameters:
           - Nombre
           - VPC
+          - AZ
           - SubredesPublicas
           - SubredesPrivadas
           - NATGateways          
@@ -22,6 +23,8 @@ Metadata:
         default: "Nombre de la VPC"
       VPC:
         default: "CIDR VPC"
+      AZ:
+        default: "Numero de zonas de disponibilidad"
       SubredesPublicas: 
         default: "Crear Subredes publicas?"
       SubredesPrivadas: 
@@ -42,6 +45,13 @@ Parameters:
     Description: Bloque CIDR asignado a la VPC
     AllowedPattern: '((\d{1,3})\.){3}\d{1,3}/\d{1,2}'
     Default: 10.2.0.0/16
+  AZ:
+    Type: Number
+    Description: Numero de zonas de disponibilidad que abarcara la VPC
+    AllowedValues:
+      - 1
+      - 2
+    Default: 2
   SubredesPublicas:
     Type: String
     Description: Indica si deben crearse o no las subredes publicas
@@ -71,10 +81,38 @@ Parameters:
       - "NO"
     Default: "SI"
 Conditions:
-  CrearSubredesPublicas: !Equals [!Ref "SubredesPublicas","SI"]
-  CrearSubredesPrivadas: !Equals [!Ref "SubredesPrivadas","SI"]
-  CrearNATGateways: !And [!Equals [!Ref "NATGateways","SI"],!Equals [!Ref "SubredesPublicas","SI"],!Equals [!Ref "SubredesPrivadas","SI"]]
-  CrearBastion: !And [!Equals [!Ref "SubredesPublicas","SI"],!Equals [!Ref "Bastion","SI"]]
+  CrearSubredesPublicas: !Equals 
+    - !Ref SubredesPublicas
+    - SI
+  CrearSubredesPrivadas: !Equals 
+    - !Ref SubredesPrivadas
+    - SI
+  CrearNATGateways: !And 
+    - !Equals 
+      - !Ref NATGateways
+      - SI
+    - !Condition CrearSubredesPublicas
+    - !Condition CrearSubredesPrivadas
+  CrearBastion: !And 
+    - !Condition CrearSubredesPublicas
+    - !Equals 
+      - !Ref Bastion
+      - SI
+  CrearSubredesPublicas2AZ: !And
+    - !Equals
+      - !Ref AZ
+      - 2
+    - !Condition CrearSubredesPublicas
+  CrearSubredesPrivadas2AZ: !And
+    - !Equals
+      - !Ref AZ
+      - 2
+    - !Condition CrearSubredesPrivadas
+  CrearNATGateways2AZ: !And
+    - !Equals
+      - !Ref AZ
+      - 2
+    - !Condition CrearNATGateways
 Resources:
   miVPC:
     Type: AWS::EC2::VPC
@@ -135,7 +173,7 @@ Resources:
             - nombreVPC: !Ref Nombre
   publica2:
     Type: AWS::EC2::Subnet
-    Condition: CrearSubredesPublicas
+    Condition: CrearSubredesPublicas2AZ
     Properties:
       VpcId: !Ref miVPC
       AvailabilityZone:
@@ -151,7 +189,7 @@ Resources:
             - nombreVPC: !Ref Nombre
   privada2:
     Type: AWS::EC2::Subnet
-    Condition: CrearSubredesPrivadas
+    Condition: CrearSubredesPrivadas2AZ
     Properties:
       VpcId: !Ref miVPC
       AvailabilityZone:
@@ -176,7 +214,7 @@ Resources:
             - nombreVPC: !Ref Nombre
   eip2:
     Type: AWS::EC2::EIP
-    Condition: CrearNATGateways
+    Condition: CrearNATGateways2AZ
     Properties:
       Domain: vpc
       Tags:
@@ -197,7 +235,7 @@ Resources:
             - nombreVPC: !Ref Nombre
   NAT2:
     Type: AWS::EC2::NatGateway
-    Condition: CrearNATGateways
+    Condition: CrearNATGateways2AZ
     Properties:
       AllocationId: !GetAtt eip2.AllocationId
       SubnetId: !Ref publica2
@@ -235,7 +273,7 @@ Resources:
             - nombreVPC: !Ref Nombre
   rutasPrivadas2:
     Type: AWS::EC2::RouteTable
-    Condition: CrearSubredesPrivadas
+    Condition: CrearSubredesPrivadas2AZ
     Properties:
       VpcId: !Ref miVPC
       Tags: 
@@ -252,7 +290,7 @@ Resources:
       DestinationCidrBlock: '0.0.0.0/0'
   rutaNAT2:
     Type: AWS::EC2::Route
-    Condition: CrearNATGateways
+    Condition: CrearNATGateways2AZ
     Properties:
       RouteTableId: !Ref rutasPrivadas2
       NatGatewayId: !Ref NAT2
@@ -265,7 +303,7 @@ Resources:
       SubnetId: !Ref publica1
   asociacionSubredPub2:
     Type: AWS::EC2::SubnetRouteTableAssociation
-    Condition: CrearSubredesPublicas
+    Condition: CrearSubredesPublicas2AZ
     Properties: 
       RouteTableId: !Ref rutasPublicas
       SubnetId: !Ref publica2
@@ -277,7 +315,7 @@ Resources:
       SubnetId: !Ref privada1
   asociacionSubredPriv2:
     Type: AWS::EC2::SubnetRouteTableAssociation
-    Condition: CrearSubredesPrivadas
+    Condition: CrearSubredesPrivadas2AZ
     Properties: 
       RouteTableId: !Ref rutasPrivadas2
       SubnetId: !Ref privada2
@@ -344,7 +382,7 @@ Outputs:
   Publica2:
     Description: ID de la subred publica 2
     Value: !GetAtt publica2.SubnetId
-    Condition: CrearSubredesPublicas
+    Condition: CrearSubredesPublicas2AZ
   Privada1:
     Description: ID de la subred privada 1
     Value: !GetAtt privada1.SubnetId
@@ -352,7 +390,7 @@ Outputs:
   Privada2:
     Description: ID de la subred privada 2
     Value: !GetAtt privada2.SubnetId
-    Condition: CrearSubredesPrivadas
+    Condition: CrearSubredesPrivadas2AZ
   TablaRutasPublica:
     Description: ID de la tabla de rutas publica
     Value: !Ref rutasPublicas
@@ -364,4 +402,4 @@ Outputs:
   TablaRutasPrivada2:
     Description: ID de la tabla de rutas privada 2
     Value: !Ref rutasPrivadas2
-    Condition: CrearSubredesPrivadas
+    Condition: CrearSubredesPrivadas2AZ
