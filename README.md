@@ -1,5 +1,11 @@
 # **Port Forwarding con AWS Systems Manager Session Manager**
-En este repositorio se prueba el funcionamiento de un túnel SSH con Port Forwarding mediante AWS SSM Session Manager. Para ello, se crearán dos instancias EC2 en subredes privadas, tras un NAT Gateway. Una de las instancias (instancia A), se utilizará para crear un túnel SSH a un servicio HTTP alojado en la segunda instancia (instancia B).
+La **redirección de puertos**, también denominada <em>**Port Forwarding**</em> es una técnica que permite redirigir el tráfico de red de un puerto de un nodo a otro puerto de otro nodo de una red. Con el protocolo SSH es posible realizar una redirección de puertos, siendo este mecanismo utilizado con frecuencia para evadir restricciones de cortafuegos y otros filtros de red. SSH permite varios tipos de redirecciones:
+
+* **Redirección local de puertos** (<em>Local Port-Forwarding</em>)
+* **Redirección remota de puertos** (<em>Remote Port-Forwarding</em>)
+* **Redirección dinámica de puertos** (Proxy SOCKS)
+
+En este repositorio se demuestra el funcionamiento de un túnel SSH con <em>Local Port Forwarding</em> mediante AWS SSM Session Manager, de forma segura, sin necesidad de exponer el puerto SSH de la máquina que creará el túnel. Para ello, se crearán dos instancias EC2 en subredes privadas, tras un NAT Gateway. Una de las instancias (instancia A), se utilizará para crear un túnel SSH a un servicio HTTP alojado en la segunda instancia (instancia B). Por último se comprobará el tráfico desde una máquina externa hacia el servidor HTTP a través del túnel.
 
 La arquitectura propuesta quedaría como sigue:
 
