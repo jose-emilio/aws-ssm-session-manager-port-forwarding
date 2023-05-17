@@ -1,5 +1,5 @@
 # **<em>Local Port-Forwarding</em> con AWS Systems Manager Session Manager**
-La **redirección de puertos**, también denominada <em>**Port Forwarding**</em> es una técnica que permite redirigir el tráfico de red de un puerto de un nodo a otro puerto de otro nodo de una red. Con el protocolo SSH es posible realizar una redirección de puertos, siendo este mecanismo utilizado con frecuencia para evadir restricciones de cortafuegos y otros filtros de red. SSH permite varios tipos de redirecciones:
+La **redirección de puertos**, también denominada <em>**Port-Forwarding**</em> es una técnica que permite redirigir el tráfico de red de un puerto de un nodo a otro puerto de otro nodo de una red. Con el protocolo SSH es posible realizar una redirección de puertos, siendo este mecanismo utilizado con frecuencia para evadir restricciones de cortafuegos y otros filtros de red. SSH permite varios tipos de redirecciones:
 
 * **Redirección local de puertos** (<em>Local Port-Forwarding</em>)
 * **Redirección remota de puertos** (<em>Remote Port-Forwarding</em>)
