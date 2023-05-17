@@ -13,7 +13,8 @@ La arquitectura propuesta quedaría como sigue:
 
 ## **Requerimientos**
 
-* Una cuenta de AWS con AWS CLI configurado
+* Una cuenta de AWS o un sandbox de <em>AWS Academy Learner Lab</em> con AWS CLI configurado
+* Una máquina con sistema operativo Linux
 
 ## **Instrucciones**
 
@@ -27,6 +28,8 @@ La arquitectura propuesta quedaría como sigue:
         BUCKET=cloudformation-us-east-2-jevs
 
 3. Empaquetar la plantilla de AWS CloudFormation:
+
+**Nota importante**: Para deplegar la plantilla en un entorno de **AWS Academy Learner Lab**, debe indicarse en el parámetro `--template-file` la plantilla `port-forwarding-learner-lab.yaml` en lugar de `port-forwarding.yaml`.
 
         aws cloudformation package --template-file port-forwarding.yaml --s3-bucket $BUCKET --output-template-file port-forwarding-transformed.yaml --region $REGION
 

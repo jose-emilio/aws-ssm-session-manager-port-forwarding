@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Plantilla que despliega dos instancias EC2 en subredes privadas, la primera de ellas administrada por AWS SSM, la segunda no. En la segunda instancia EC2 se instalará un servidor web
+Parameters:
+  AmiID:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Description: ID de la AMI
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-arm64-gp2'
+Resources:
+  VPC:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        Nombre: PortForwarding
+        VPC: 10.0.0.0/16
+        AZ: 1
+        SubredesPublicas: SI
+        SubredesPrivadas: SI
+        NATGateways: SI
+        Bastion: 'NO'
+      TemplateURL: ./vpc.yaml
+  grupoSegInstancia1:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !GetAtt VPC.Outputs.VPC
+      GroupDescription: Grupo de seguridad para la instancia 1. No permite trafico de entrada, se administra mediante AWS SSM Session Manager
+  instancia1:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmiID
+      InstanceType: t4g.micro
+      SecurityGroupIds:
+        - !Ref grupoSegInstancia1
+      SubnetId: !GetAtt VPC.Outputs.Privada1
+      IamInstanceProfile: LabInstanceProfile
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            yum update -y
+      Tags:
+        - Key: "Name"
+          Value: "Instancia1"
+  grupoSegInstancia2:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !GetAtt VPC.Outputs.VPC
+      GroupDescription: Grupo de seguridad para la instancia 2. Permite el trafico HTTP desde cualquier ubicacion
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
+          FromPort: 80
+          ToPort: 80   
+  instancia2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmiID
+      InstanceType: t4g.micro
+      SecurityGroupIds:
+        - !Ref grupoSegInstancia2
+      SubnetId: !GetAtt VPC.Outputs.Privada1
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            yum update -y
+            yum install httpd -y
+            systemctl enable httpd
+            systemctl start httpd
+            echo "<h1>Servidor web en la instancia 2</h1>" >> /var/www/html/index.html
+      Tags:
+        - Key: "Name"
+          Value: "Instancia2"
+Outputs:
+  Id1:
+    Description: ID de la instancia 1
+    Value: !Ref instancia1
+  Ip2:
+    Description: IP privada de la instancia 2
+    Value: !GetAtt instancia2.PrivateIp
