@@ -10,7 +10,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        Nombre: Servicio
+        Nombre: PortForwarding
         VPC: 10.0.0.0/16
         AZ: 1
         SubredesPublicas: SI
