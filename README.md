@@ -19,7 +19,7 @@ La arquitectura propuesta quedaría como sigue:
 
 1. Se establece la región donde se creará la infraestructura (cambiar el valor de la variable de entorno por el apropiado):
         
-        REGION=us-east-2
+        REGION=us-east-1
 
 2. Se crea un bucket de Amazon S3 donde se almacenarán los archivos necesarios para el despliegue (cambiar el nombre del bucket por el apropiado). AWS CloudFormation utilizará dicho bucket.
 
