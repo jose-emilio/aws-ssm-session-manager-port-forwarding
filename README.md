@@ -12,8 +12,8 @@ En este repositorio se demuestra el funcionamiento de un túnel SSH con <em>Loca
 
 ## **Requerimientos**
 
-* Una cuenta de AWS o un sandbox de <em>AWS Academy Learner Lab</em> con AWS CLI configurado
-* Una máquina con sistema operativo Linux
+* Una cuenta de AWS o un sandbox de <em>AWS Academy Learner Lab</em> 
+* Un entorno con sistema operativo Linux y con acceso programático a AWS configurado
 
 ## **Arquitectura propuesta**
 
